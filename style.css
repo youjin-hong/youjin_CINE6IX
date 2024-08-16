@@ -100,6 +100,9 @@ h1 > span {
   color: #a8a8a8;
   cursor: pointer;
 }
+#search-btn:hover {
+  color: #ffba4c;
+}
 
 /* 공통 속성 */
 .section-con {
@@ -135,6 +138,7 @@ h2 {
   flex-direction: column;
   place-items: center;
   position: relative;
+  cursor: pointer;
 }
 .poster-con .movieImg {
   /* border: 5px solid lightgray; */
@@ -316,28 +320,41 @@ footer p {
 
 /* modal */
 .modal-con {
-  /* position: fixed; */
+  opacity: 0;
+  transition: 0.3s;
+}
+.modal-con.on {
+  opacity: 1;
+  position: fixed;
   border: 2px solid #ffba4c;
-  top: 20%;
-  left: 20%;
-  z-index: 9999;
-  width: 70%;
+  top: 10%;
+  left: 15%;
+  z-index: 999;
+}
+.modal-wrapper {
+  display: flex;
+  width: 100%;
   min-width: 300px;
-  max-width: 500px;
-  height: 50vw;
-  min-height: 1000px;
+  max-width: 1200px;
+  height: 30vw;
+  min-height: 700px;
   margin: auto;
   border-radius: 6px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
   justify-content: space-between;
   padding-top: 1rem;
 }
+.content-sec > * {
+  /* transform: translate(1rem, 2.5rem); */
+  padding-top: 1rem;
+}
+.content-sec {
+  width: 50%;
+}
+.comment-sec {
+  width: 50%;
+}
 .movie-poster {
   overflow: hidden;
-  height: auto;
-  width: 100%;
   padding: 1rem;
 }
 .movie-poster img {
@@ -384,11 +401,16 @@ footer p {
   color: #a8a8a8;
   width: 95%;
   font-size: 15px;
+  overflow-y: auto;
 }
 .fa-close {
   font-size: 1.5rem;
   align-self: flex-end;
   padding-right: 1rem;
+  position: absolute;
+  top: 5px;
+  right: 0;
+  z-index: 9999;
 }
 .fa-close:hover,
 .fa-close.on {
@@ -398,10 +420,11 @@ footer p {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  justify-content: space-between;
+  padding: 2.5rem 0;
 }
 .my-comment-con {
-  padding: 1rem 2rem 0 2rem;
+  padding: 0 2rem;
   width: 90%;
 }
 .comment-title {
@@ -414,8 +437,7 @@ footer p {
 .comment-con {
   display: flex;
   width: 100%;
-  gap: 10px;
-  padding: 1rem;
+  padding: 1rem 2rem;
 }
 #comment {
   background-color: #252020;

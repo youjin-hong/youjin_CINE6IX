@@ -23,7 +23,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="style.css" />
-    <script src="common.js" defer></script>
+    <script src="common.js" type="module" defer></script>
   </head>
   <body>
     <header class="header" id="header">
@@ -344,37 +344,40 @@
     <footer>
       <p>&copy; 2024 CINE6IX. All rights reserved.</p>
     </footer>
-    <div class="modal-con">
+    <div class="modal-con" id="modal-con">
       <i class="fa fa-close"></i>
-      <div class="movie-poster">
-        <img
-          src="https://i.ytimg.com/vi/LEjhY15eCx0/maxresdefault.jpg"
-          alt="insideout2"
-        />
-      </div>
-      <div class="movie-contents-con">
-        <div class="title-content">
-          <p class="modal-title">InsideOut 2</p>
-          <div class="score">
-            <i class="fa fa-star"></i>
-            <p class="star">9.0</p>
+     <div class="modal-wrapper" id="modal-wrapper">
+       <!-- <div class="content-sec">
+           <div class="movie-poster">
+            <img
+              src="https://i.ytimg.com/vi/LEjhY15eCx0/maxresdefault.jpg"
+              alt="insideout2"
+            />
           </div>
-        </div>
-        <p class="show-date">개봉일자: 2024.4.10</p>
-        <div class="people-content">
-          <p class="genre">장르: 애니메이션</p>
-          <p class="director">감독: 홍유진</p>
-          <p class="writer">작가: 홍유진</p>
-          <p class="actors">배우: 불안이, 슬픔이, 기쁨이, ...</p>
-        </div>
-        <p class="plot">
-          상세줄거리 Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          Distinctio enim ab alias ipsum dolores possimus porro architecto magni
-          blanditiis nihil excepturi dolorum ipsa ex sit delectus, tenetur
-          voluptatum. Tempora, suscipit?
-        </p>
-      </div>
-      <div class="comment-sec">
+          <div class="movie-contents-con">
+            <div class="title-content">
+              <p class="modal-title">InsideOut 2</p>
+              <div class="score">
+                <i class="fa fa-star"></i>
+                <p class="star">9.0</p>
+              </div>
+            </div>
+            <p class="show-date">개봉일자: 2024.4.10</p>
+            <div class="people-content">
+              <p class="genre">장르: 애니메이션</p>
+              <p class="director">감독: 홍유진</p>
+              <p class="writer">작가: 홍유진</p>
+              <p class="actors">배우: 불안이, 슬픔이, 기쁨이, ...</p>
+            </div>
+            <p class="plot">
+              상세줄거리 Lorem ipsum dolor sit amet consectetur adipisicing elit.
+              Distinctio enim ab alias ipsum dolores possimus porro architecto
+              magni blanditiis nihil excepturi dolorum ipsa ex sit delectus,
+              tenetur voluptatum. Tempora, suscipit?
+            </p>
+          </div>
+           </div>
+           <div class="comment-sec">
         <div class="my-comment-con">
           <p class="comment-title">나의 한줄평</p>
           <p class="my-comment">
@@ -394,7 +397,7 @@
           <input type="input" id="comment" placeholder=" 글을 입력해주세요" />
           <button class="comment-btn">댓글달기</button>
         </div>
-      </div>
-    </div>
+           </div> -->
+     </div>
   </body>
 </html>
