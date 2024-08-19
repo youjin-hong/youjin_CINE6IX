@@ -53,9 +53,9 @@ h1 > span {
   color: #ffba4c;
   border: 1px solid #ffba4c;
 }
-
+/* 
 .hamburger-btn {
-}
+} */
 .hamburger-btn span {
   display: inline-block;
   border: 1px solid white;
@@ -131,6 +131,7 @@ h2 {
   gap: 20px;
   transform: translateY(5rem);
   padding: 1rem;
+  position: relative;
 }
 .poster-con {
   /* border: 1px solid white; */
@@ -148,6 +149,10 @@ h2 {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.poster-con:hover {
+  transform: scale(1.1, 1.1);
+  transition: 0.3s;
 }
 .poster-con img {
   border-radius: 6px;
@@ -217,44 +222,102 @@ h2 {
 }
 
 /* section2 */
-.section2-con {
+#section2 {
   border-bottom: 1px solid white;
+}
+.section2-con {
   padding-bottom: 10%;
+  max-width: 900px;
+  width: 100%;
+  height: 50vw;
+  position: relative;
+  margin: auto;
+}
+.nav-button {
+  position: absolute;
+  top: 50%;
+  cursor: pointer;
+  border: none;
+  font-size: 30px;
+}
+.nav-button#prev {
+  left: -20%;
+}
+.nav-button#next {
+  right: -20%;
+}
+.nav-button#prev:hover,
+.nav-button#next:hover {
+  color: #ffba4c;
 }
 .section2-wrapper {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(2, fr);
+  display: flex;
+  position: relative;
+  height: 100%;
+  perspective: 1000px;
+  transition: transform 0.3s ease-in-out;
 }
-.section2-wrapper div {
-  overflow: hidden;
-  padding: 1rem 1rem;
-}
-.item1 {
-  grid-column: span 2;
-  grid-row: span 2;
-}
-.item4 {
-  grid-column: span 2;
-}
-.item4 .sec2-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 0.3rem;
-}
-.item4 .sec2-genre {
-  font-size: 0.9rem;
-  font-weight: bold;
-}
-.item4 .sec2-description {
-  color: #7a7a7a;
-  padding: 1rem 0;
-}
-.section2-wrapper img {
+.card {
+  position: relative;
   width: 100%;
   height: 100%;
-  border-radius: 6px;
-  object-fit: cover;
+  transform: translateX(20%) rotateY(-45deg);
+  transition: transform 0.3s;
+  transform-style: preserve-3d;
+  cursor: pointer;
+  opacity: 0.4;
+}
+.card.active {
+  transform: rotateY(0deg) translateX(0);
+  opacity: 1;
+}
+.card.left {
+  transform: translateX(-20%) rotateY(45deg);
+}
+.inner-card {
+  position: relative;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.3s;
+}
+.card:hover .inner-card {
+  transform: rotateY(180deg);
+}
+.inner-card .front,
+.inner-card .back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+}
+.card .front img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.inner-card .back {
+  transform: rotateY(180deg);
+  background-color: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+}
+.back .title-score {
+  display: flex;
+  align-items: center;
+}
+.back .score {
+  display: flex;
+  padding: 0 0 3px 1rem;
+}
+.back .title {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+.back .detail {
+  width: 100%;
+  text-align: end;
 }
 
 /* section3 */
@@ -266,27 +329,22 @@ h2 {
 .category-con {
   /* border: 3px solid red; */
   display: flex;
-  justify-content: end;
-  gap: 2rem;
-  padding: 1rem 2rem 4rem 2rem;
+  justify-content: center;
+  gap: 1.2rem;
+  width: 100%;
+  padding: 2rem 0 4rem 0;
 }
 .category-con button {
-  border: 1px solid blue;
+  /* border: 1px solid blue; */
   color: #585858;
   border-radius: 20px;
-  width: 60px;
-  height: 35px;
-  font-size: medium;
+  font-size: 15px;
   font-weight: bold;
   border: none;
 }
-.category-con button:hover {
-  color: #ffba4c;
-  border: 1px solid #ffba4c;
-}
+.category-con button:hover,
 .category-con button.on {
   color: #ffba4c;
-  border: 1px solid #ffba4c;
 }
 
 .genreImg-con {
@@ -297,10 +355,24 @@ h2 {
 }
 .genreImg-con li {
   overflow: hidden;
+  position: relative;
 }
 .genreImg-con li:hover {
   transform: scale(1.1, 1.1);
   transition: 0.3s;
+}
+.genreImg-con .title {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.9));
+  color: white;
+  text-align: center;
+}
+.genreImg-con li:hover .title {
+  color: #ffba4c;
+  background-color: rgba(0, 0, 0, 0.8);
 }
 .genreImg-con li img {
   width: 100%;

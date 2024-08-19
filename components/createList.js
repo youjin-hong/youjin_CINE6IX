@@ -1,9 +1,9 @@
-const createHtml = (movieCount, $imgCon1, openModal) => {
+const createHtml = (countPerPageMovie, $imgCon1, openModal) => {
   // 이미지 리스트 초기화
   $imgCon1.innerHTML = "";
 
   // li 만들기
-  movieCount.forEach((movie) => {
+  countPerPageMovie.forEach((movie) => {
     const $movieCard = document.createElement("li");
     $movieCard.setAttribute("class", "poster-con");
     $movieCard.innerHTML = `

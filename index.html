@@ -41,6 +41,7 @@
     </header>
 
     <main>
+      <!-- section1 -->
       <section class="section-con" id="section1">
         <div class="section1-con">
           <div class="search-con" id="search-con">
@@ -210,64 +211,34 @@
               </li> -->
             </ul>
           </div>
-          <div class="pagination-con">
-            <span class="prev">&lt;</span>
-            <button class="on">1</button>
-            <button>2</button>
-            <button>3</button>
-            <button>4</button>
-            <span class="next">&gt;</span>
-          </div>
+          <div class="pagination-con" id="search-pagination"></div>
         </div>
       </section>
+
+      <!-- section2 -->
       <section class="section-con" id="section2">
         <div class="section2-con">
           <h2>최신영화</h2>
-          <div class="section2-wrapper">
-            <div class="item1">
-              <img
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStaoSJPhu1_jW9yfY2ZUBLCyfiUNcXnaU0IQ&s"
-                alt=""
-              />
-            </div>
-            <div class="item2">
-              <img
-                src="https://mblogthumb-phinf.pstatic.net/MjAxOTAzMjhfMTAw/MDAxNTUzNzQxOTQwMjg5.uxPhVQ8lAV5WiVB4UkRGLX5au7RYkyM8TR6d2_3dS3wg.-NqepXnRzqxerbzAaBakKktMYwbnd50WUJB9rumlSE0g.JPEG.cine_play/movie_image0Z6J2SE0.jpg?type=w800"
-                alt=""
-              />
-            </div>
-            <div class="item3">
-              <img
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7w7_nPoBn02oEb78pvZ8u1AZVFCOSNYuAUA&s"
-                alt=""
-              />
-            </div>
-            <div class="item4">
-              <p class="sec2-title">제목</p>
-              <p class="sec2-genre">장르</p>
-              <p class="sec2-description">
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Velit
-                consequatur deleniti molestiae maxime molestias, distinctio modi
-                quae quidem, libero ex veniam nesciunt. Voluptatum, minus
-                numquam neque inventore dolor quia dolorem!
-              </p>
-            </div>
-          </div>
+          <ul class="section2-wrapper"></ul>
+          <button id="prev" class="nav-button">&lt;</button>
+          <button id="next" class="nav-button">&gt;</button>
         </div>
       </section>
+
+      <!-- section3 -->
       <section class="section-con" id="section3">
         <div class="section3-con">
           <h2>장르별</h2>
           <ul class="category-con">
-            <button class="on">드라마</button>
+            <!-- <button class="on">드라마</button>
             <button>코믹</button>
             <button>액션</button>
             <button>스릴러</button>
-            <button>로맨스</button>
+            <button>로맨스</button> -->
           </ul>
           <div class="section3-wrapper">
             <ul class="genreImg-con">
-              <li>
+              <!-- <li>
                 <img
                   src="https://www.kofic.or.kr/kofic/uploadFile/ckeditor/images/%EB%B3%B4%ED%9D%AC%EC%99%80%EB%85%B9%EC%96%91_%EC%8A%A4%ED%8B%B8(1).jpg"
                   alt=""
@@ -326,9 +297,9 @@
                   src="https://db.kookje.co.kr/news2000/photo/2017/0614/L20170614.99002005030i1.jpg"
                   alt=""
                 />
-              </li>
+              </li> -->
             </ul>
-            <div class="pagination-con">
+            <div class="pagination-con" id="genre-pagination">
               <span class="prev">&lt;</span>
               <button class="on">1</button>
               <button>2</button>
@@ -344,10 +315,11 @@
     <footer>
       <p>&copy; 2024 CINE6IX. All rights reserved.</p>
     </footer>
+
     <div class="modal-con" id="modal-con">
       <i class="fa fa-close"></i>
-     <div class="modal-wrapper" id="modal-wrapper">
-       <!-- <div class="content-sec">
+      <div class="modal-wrapper" id="modal-wrapper">
+        <!-- <div class="content-sec">
            <div class="movie-poster">
             <img
               src="https://i.ytimg.com/vi/LEjhY15eCx0/maxresdefault.jpg"
@@ -396,8 +368,8 @@
         <div class="comment-con">
           <input type="input" id="comment" placeholder=" 글을 입력해주세요" />
           <button class="comment-btn">댓글달기</button>
-        </div>
-           </div> -->
-     </div>
+        </div>-->
+      </div>
+    </div>
   </body>
 </html>

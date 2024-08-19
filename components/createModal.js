@@ -16,6 +16,10 @@ const createModal = (movieId, $modalWrapper) => {
     .join(", ");
   const hasMoreActors = cast.length > 4 ? "..." : "";
 
+  // 모달을 열 때 저장된 댓글을 업로드
+  let comments =
+    JSON.parse(localStorage.getItem(`comments_${movieId.id}`)) || [];
+
   $contentSec.innerHTML = `
     <div class="movie-poster">
       <img
@@ -49,31 +53,50 @@ const createModal = (movieId, $modalWrapper) => {
     </div>
   `;
 
-  $commentSec.innerHTML = `
-    <div class="my-comment-con">
-      <p class="comment-title">나의 한줄평</p>
-      <p class="my-comment">
-        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quasi
-        numquam, qui cupiditate et corrupti saepe, excepturi neque accusamus
-        eius veritatis ipsa odit, voluptatem sunt repellendus iste maiores
-        illo! Adipisci, rerum?
-      </p>
-      <p class="my-comment">
-        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quasi
-        numquam, qui cupiditate et corrupti saepe, excepturi neque accusamus
-        eius veritatis ipsa odit, voluptatem sunt repellendus iste maiores
-        illo! Adipisci, rerum?
-      </p>
-    </div>
-    <div class="comment-con">
-      <input type="input" id="comment" placeholder=" 글을 입력해주세요" />
-      <button class="comment-btn">댓글달기</button>
-    </div>
-  `;
+  const renderComments = () => {
+    $commentSec.innerHTML = `
+      <div class="my-comment-con">
+        <p class="comment-title">나의 한줄평</p>
+        <div id="comments-list">
+          ${
+            comments.length > 0
+              ? comments
+                  .map((comment) => `<p class="my-comment">${comment}</p>`)
+                  .join("<br />")
+              : "<p>나의 한줄평이 없습니다. 영화에 대한 한줄평을 남겨보세요</p>"
+          }
+        </div>
+      </div>
+      <div class="comment-con">
+        <input type="text" id="comment" placeholder=" 글을 입력해주세요" />
+        <button class="comment-btn" id="comment-btn">댓글달기</button>
+      </div>
+    `;
+  };
+
+  renderComments();
 
   $modalWrapper.appendChild($contentSec);
   $modalWrapper.appendChild($commentSec);
 
+  // 댓글 올리기 이벤트 리스너
+  document.getElementById("comment-btn").addEventListener("click", () => {
+    const newComment = document.getElementById("comment").value.trim();
+    if (newComment) {
+      comments.push(newComment);
+      localStorage.setItem(`comments_${movieId.id}`, JSON.stringify(comments));
+      document.getElementById("comment").value = "";
+      renderComments();
+    }
+  });
+
+  document.getElementById("comment").addEventListener("keyup", (e) => {
+    if (e.key === "Enter") {
+      document.getElementById("comment-btn").click();
+    }
+  });
+
   return $modalWrapper;
 };
+
 export default createModal;
