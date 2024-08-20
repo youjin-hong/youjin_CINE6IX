@@ -4,7 +4,7 @@ import error from "./components/error.js";
 
 // ---------- 변수 설정 ---------- //
 // API_KEY
-const TM_API_KEY = "20bc91ea9f74bee7cbb4d963cc9ce35c";
+const TM_API_KEY = "";
 
 // header
 const $searchMenu = document.getElementById("search-menu");
