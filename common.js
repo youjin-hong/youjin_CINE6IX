@@ -1,7 +1,8 @@
-import createHtml from "./components/createList.js";
-import createModal from "./components/createModal.js";
+// ---------- 모듈 불러오기 ---------- //
+import fetchUrl from "./apis/api.js";
 import error from "./components/error.js";
 
+// ---------- 변수 설정 ---------- //
 // API_KEY
 const TM_API_KEY = "20bc91ea9f74bee7cbb4d963cc9ce35c";
 
@@ -35,210 +36,191 @@ const $next = document.getElementById("next");
 const $genreCategoryCon = document.querySelector(".category-con");
 const $genreImg = document.querySelector(".genreImg-con");
 
-// url 객체 생성
-
 // 페이지 관련된 변수 설정
-let resultsPerPage = 0;
 let groupSize = 5;
 let page = 1;
-let totalData = 0;
 let totalPage = 0;
-let movieList = [];
+let currentQuery = ""; // 현재 검색어를 저장할 변수 (검색 후 페이지네이션이 제대로 안돼서 추가한 변수)
 
 // 카드 슬라이드에 필요한 변수 설정
 let currentActiveCard = 0;
 let allMovies = [];
 
-// api 호출에 쓰이는 객체 (전역으로 쓰임)
-const options = {
-  method: "GET",
-  headers: {
-    accept: "application/json",
-    Authorization:
-      "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMGJjOTFlYTlmNzRiZWU3Y2JiNGQ5NjNjYzljZTM1YyIsIm5iZiI6MTcyMzQyNDQ0Mi41MDgxNTYsInN1YiI6IjY2Yjk1ZTBjMmZiNDAzNjg2MTI1NmI5YiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.7EKPhYlBBQMXzo_fJog13U-t-WXUEdR33FQxuJO5XqU",
-  },
-};
-
+// ---------- fetch 함수 모아두기 (sec1 ~ sec3) ---------- //
 // section1 //
-// 영화 list fetch
-const fetchHomeData = async (options) => {
-  let sec1ImgUrl = new URL(
-    `https://api.themoviedb.org/3/discover/movie?language=ko-KR`
-  );
-  try {
-    sec1ImgUrl.searchParams.set("api_key", TM_API_KEY);
-    sec1ImgUrl.searchParams.set("sort_by", "popularity.desc");
-    sec1ImgUrl.searchParams.set("page", page);
-
-    const res = await fetch(sec1ImgUrl, options);
-    const tmData = await res.json();
-
-    return tmData;
-  } catch (e) {
-    console.log(e);
-  }
+const fetchHomeData = async () => {
+  return await fetchUrl("/discover/movie", {
+    language: "ko-KR",
+    sort_by: "popularity.desc",
+    page: page,
+  });
 };
 
-// 검색 fetch
-const fetchInputData = async (query, options) => {
-  try {
-    const searchUrl = new URL(
-      "https://api.themoviedb.org/3/search/movie?language=ko-KR"
-    );
-    searchUrl.searchParams.set("api_key", TM_API_KEY);
-    searchUrl.searchParams.set("query", query);
-    searchUrl.searchParams.set("page", page);
-
-    const res = await fetch(searchUrl, options);
-    const tmData = await res.json();
-
-    return tmData;
-  } catch (e) {
-    console.log(e);
-    return { result: [] };
-  }
+const fetchInputData = async (query) => {
+  return await fetchUrl("/search/movie", {
+    language: "ko-KR",
+    query: query,
+    page: page,
+  });
 };
 
-// section1 영화 포스터 리스트 불러오기
+// section2 //
+const fetchLatestData = async () => {
+  const data = await fetchUrl("/movie/now_playing", {
+    language: "ko-KR",
+    page: page,
+  });
+  allMovies = data.results;
+  renderSlide(3);
+};
+
+// section3 //
+const fetchGenreCategoryData = async () => {
+  return await fetchUrl("/genre/movie/list", {
+    language: "ko",
+  });
+};
+
+const fetchGenreData = async (genreId) => {
+  return await fetchUrl("/discover/movie", {
+    language: "ko-KR",
+    sort_by: "popularity.desc",
+    page: page,
+    with_genres: genreId,
+  });
+};
+
+// modal fetch //
+const fetchModalData = async (movieId) => {
+  return await fetchUrl(`/movie/${movieId}`, {
+    append_to_response: "credits",
+    language: "ko-KR",
+  });
+};
+
+// ---------- 컴포넌트 만들기 ---------- //
+// section1
+const createSearchMovieList = (countPerPageMovie, openModal) => {
+  // 이미지 리스트 초기화
+  $imgCon1.innerHTML = "";
+
+  // li 만들기
+  countPerPageMovie.forEach((movie) => {
+    const $movieCard = document.createElement("li");
+    $movieCard.setAttribute("class", "poster-con");
+
+    const posterImgUrl = movie.poster_path
+      ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+      : "./images/no-img.PNG";
+
+    $movieCard.innerHTML = `
+      <div class="movieImg">
+        <img src="${posterImgUrl}" alt="" />
+      </div>
+      <div class="detail-sec1" id="detail-sec1">
+        <p class="vote_average" id="vote_average">평점 ${movie.vote_average.toFixed(
+          1
+        )}</p>
+        <p class="title" id="title">${movie.title}</p>
+        <p class="release_date" id="release_date">${movie.release_date.substring(
+          0,
+          4
+        )}</p>
+      </div>
+    `;
+    $imgCon1.appendChild($movieCard);
+
+    // li 클릭하면 openModal 함수 호출
+    $movieCard.addEventListener("click", (e) => {
+      // console.log(movie.id);
+      openModal(movie.id);
+    });
+    return $movieCard;
+  });
+};
+
 const renderMovie = async (query = "") => {
   $imgCon1.innerHTML = "";
-  const data = query ? await fetchInputData(query) : await fetchHomeData();
+
+  if (query) {
+    currentQuery = query;
+    page = 1;
+  }
+
+  const data = currentQuery
+    ? await fetchInputData(currentQuery)
+    : await fetchHomeData();
 
   if (!data || !data.results || !data.results.length) {
     return error($imgCon1);
   }
-  console.log(data);
 
-  // 총 데이터, 총 페이지 수 계산
-  resultsPerPage = 12;
-  totalData = data.total_results;
-  totalPage = Math.ceil(totalData / resultsPerPage);
-
-  // 전체 데이터 total_results의 각 아이템에 인덱스 생성
-  const totalMovies = Array.from({ length: data.total_results }, (_, index) => {
-    const item = data.results[index % data.results.length];
-    return {
-      ...item, // 현재 인덱스에 해당하는 item의 데이터 전개
-      globalIndex: index + 1, // 0부터 시작하는 globalIndex
-    };
-  });
-
-  console.log("total", totalMovies);
-
-  // 현재 페이지의 첫번째, 마지막 영화 인덱스 계산
-  const startPerPageIndex = (page - 1) * resultsPerPage;
-  const endPerPageIndex = startPerPageIndex + resultsPerPage;
-
-  console.log(startPerPageIndex);
-  console.log(endPerPageIndex);
-
-  // 전체 영화에서 현재 페이지만 해당하는 영화를 slice
-  const countPerPageMovie = totalMovies.slice(
-    startPerPageIndex,
-    endPerPageIndex
-  );
+  totalPage = Math.ceil(data.total_results / data.results.length);
 
   createSearchPagination(page);
-  createHtml(countPerPageMovie, $imgCon1, openModal);
+  createSearchMovieList(data.results, openModal);
 };
 
 const searchMovie = async () => {
-  // 어느 페이지에서 검색하든 1 페이지부터 보여질 수 있게 초기화
-  page = 1;
   const inputValue = $searchInput.value;
-
-  if (inputValue) {
-    await renderMovie(inputValue);
-  } else {
-    await renderMovie();
-  }
+  await renderMovie(inputValue);
   $searchInput.value = "";
 };
 
-// 페이지네이션 ui 만들기
 const createSearchPagination = (currentPage) => {
   $searchPagination.innerHTML = "";
 
-  // 페이지 그룹 계산
   let pageGroup = Math.ceil(page / groupSize);
-
-  // 페이지 그룹의 첫번째, 마지막 페이지 번호 계산
   let firstPagePerGroup = (pageGroup - 1) * groupSize + 1;
-  let lastPagePerGroup = pageGroup * groupSize;
+  let lastPagePerGroup = Math.min(pageGroup * groupSize, totalPage);
 
-  // 이전 그룹으로 이동하는 버튼 생성
-  const prevGroupBtn = document.createElement("span");
-  prevGroupBtn.textContent = "<";
-  prevGroupBtn.classList.add("prev");
   if (firstPagePerGroup > 1) {
+    const prevGroupBtn = document.createElement("span");
+    prevGroupBtn.textContent = "<";
+    prevGroupBtn.classList.add("prev");
     prevGroupBtn.addEventListener("click", () => {
       page = firstPagePerGroup - 1;
-      renderMovie($searchInput.value);
+      renderMovie();
       createSearchPagination(page);
     });
+    $searchPagination.appendChild(prevGroupBtn);
   }
-  $searchPagination.appendChild(prevGroupBtn);
 
-  // 페이지 버튼 생성
   for (let i = firstPagePerGroup; i <= lastPagePerGroup; i++) {
     const pageButton = document.createElement("button");
     pageButton.textContent = i;
     if (i === currentPage) pageButton.classList.add("on");
     pageButton.addEventListener("click", () => {
       page = i;
-      renderMovie($searchInput.value);
+      renderMovie();
       createSearchPagination(page);
     });
     $searchPagination.appendChild(pageButton);
   }
 
-  // 다음 그룹으로 이동하는 버튼 생성
-  const nextGroupBtn = document.createElement("span");
-  nextGroupBtn.textContent = ">";
-  nextGroupBtn.classList.add("next");
   if (lastPagePerGroup < totalPage) {
+    const nextGroupBtn = document.createElement("span");
+    nextGroupBtn.textContent = ">";
+    nextGroupBtn.classList.add("next");
     nextGroupBtn.addEventListener("click", () => {
       page = lastPagePerGroup + 1;
-      renderMovie($searchInput.value);
+      renderMovie();
       createSearchPagination(page);
     });
-  }
-  if (lastPagePerGroup > totalPage) lastPagePerGroup = totalPage;
-  $searchPagination.appendChild(nextGroupBtn);
-};
-
-// section2 //
-const fetchLatestData = async () => {
-  const currentUrl = new URL(
-    "https://api.themoviedb.org/3/movie/now_playing?language=ko-KR&page=1"
-  );
-  try {
-    currentUrl.searchParams.set("api_key", TM_API_KEY);
-
-    const res = await fetch(currentUrl, options);
-    const tmData = await res.json();
-
-    // 데이터를 allMovies 배열에 저장
-    allMovies = tmData.results;
-
-    // 데이터 가져온 후 슬라이드를 생성하도록 renderSlide 호출
-    renderSlide();
-  } catch (e) {
-    console.log(e);
-    return { result: [] };
+    $searchPagination.appendChild(nextGroupBtn);
   }
 };
 
-const createSlideMovieCon = () => {
+// section2
+const createSlideMovieCon = (resultsPerPage) => {
   $sec2Wrapper.innerHTML = "";
-  resultsPerPage = 3;
 
-  const moviesToShow = allMovies.slice(
+  const slideMovies = allMovies.slice(
     currentActiveCard,
     currentActiveCard + resultsPerPage
   );
 
-  moviesToShow.forEach((movie, index) => {
+  slideMovies.forEach((movie, index) => {
     const latestMovie = document.createElement("li");
     latestMovie.setAttribute("class", "card");
     latestMovie.classList.add(
@@ -270,11 +252,11 @@ const createSlideMovieCon = () => {
   });
 };
 
-const renderSlide = () => {
-  createSlideMovieCon();
+const renderSlide = (resultsPerPage) => {
+  createSlideMovieCon(resultsPerPage);
 };
 
-const moveCard = (direction) => {
+const moveCard = (direction, resultsPerPage) => {
   currentActiveCard += direction;
 
   if (currentActiveCard < 0) {
@@ -283,47 +265,16 @@ const moveCard = (direction) => {
     currentActiveCard = allMovies.length - resultsPerPage;
   }
 
-  renderSlide();
+  renderSlide(resultsPerPage);
 };
-
-$prev.addEventListener("click", () => moveCard(-1));
-$next.addEventListener("click", () => moveCard(1));
 
 fetchLatestData(); // fetchLatestData에서 데이터 로드 후 renderSlide 호출
 
-// section3 //
-// 장르 카테고리 불러오기
-const fetchGenreCategoryData = async () => {
-  const categoryUrl = new URL("https://api.themoviedb.org/3/genre/movie/list");
-  categoryUrl.searchParams.set("api_key", TM_API_KEY);
-  categoryUrl.searchParams.set("language", "ko");
-
-  const res = await fetch(categoryUrl);
-  const data = await res.json();
-  const tmData = data.genres;
-
-  return tmData;
-};
-
-const fetchGenreData = async (genreId) => {
-  let genreImgUrl = new URL(
-    `https://api.themoviedb.org/3/discover/movie?language=ko-KR`
-  );
-  genreImgUrl.searchParams.set("api_key", TM_API_KEY);
-  genreImgUrl.searchParams.set("sort_by", "popularity.desc");
-  genreImgUrl.searchParams.set("page", page);
-  genreImgUrl.searchParams.set("with_genres", genreId);
-
-  const res = await fetch(genreImgUrl);
-  const tmData = await res.json();
-
-  return tmData.results;
-};
-
+// section3
 const createGenreBtn = async () => {
   const genreData = await fetchGenreCategoryData();
   let defaultGenre = null;
-  genreData.forEach((genre) => {
+  genreData.genres.forEach((genre) => {
     const genreBtn = document.createElement("button");
     genreBtn.textContent = genre.name;
 
@@ -348,72 +299,201 @@ const createGenreBtn = async () => {
   if (defaultGenre) renderGenre(defaultGenre);
 };
 
-const createGenreImg = async (countPerPageMovie, openModal) => {
+const createGenreImg = async (movies, openModal) => {
   $genreImg.innerHTML = "";
 
-  countPerPageMovie
-    .filter((item) => item.backdrop_path)
-    .forEach((movie) => {
-      const genreImg = document.createElement("li");
-      genreImg.innerHTML = `
-      <img src="https://image.tmdb.org/t/p/w500${movie.backdrop_path}" alt="${movie.title}" />
+  movies.forEach((movie) => {
+    const genreImg = document.createElement("li");
+    genreImg.classList.add("genre-item");
+
+    const backdropImgUrl = movie.backdrop_path
+      ? `https://image.tmdb.org/t/p/w500${movie.backdrop_path}`
+      : "./images/no-img.PNG";
+
+    genreImg.innerHTML = `
+      <img src="${backdropImgUrl}" alt="${movie.title}" />
       <div class="title">${movie.title}</div>`;
-      $genreImg.appendChild(genreImg);
-      genreImg.addEventListener("click", () => openModal(movie.id));
-    });
+
+    $genreImg.appendChild(genreImg);
+    genreImg.addEventListener("click", () => openModal(movie.id));
+  });
 };
 
 const renderGenre = async (genreId = 28) => {
   const movies = await fetchGenreData(genreId);
-  if (!movies || !movies.length) return;
+  if (!movies.results || !movies.results.length) return;
 
-  resultsPerPage = 10;
-  totalData = movies.length;
-  totalPage = Math.ceil(totalData / resultsPerPage);
+  totalPage = Math.ceil(movies.total_results / movies.results.length);
 
-  const totalMovies = movies.map((movie, index) => ({
-    ...movie,
-    globalIndex: index + 1,
-  }));
+  createGenreImg(movies.results, openModal);
+  createGenrePagination(page, genreId);
+};
 
-  const startPerPageIndex = (page - 1) * resultsPerPage;
-  const endPerPageIndex = startPerPageIndex + resultsPerPage;
+const createGenrePagination = (currentPage, genreId) => {
+  $genrePagination.innerHTML = "";
 
-  const countPerPageMovie = totalMovies.slice(
-    startPerPageIndex,
-    endPerPageIndex
-  );
-  createGenreImg(countPerPageMovie, openModal);
-  createSearchPagination(page);
+  // 페이지 그룹 계산
+  let pageGroup = Math.ceil(page / groupSize);
+
+  // 페이지 그룹의 첫번째, 마지막 페이지 번호 계산
+  let firstPagePerGroup = (pageGroup - 1) * groupSize + 1;
+  let lastPagePerGroup = Math.min(pageGroup * groupSize, totalPage);
+
+  if (firstPagePerGroup > 1) {
+    // 이전 그룹으로 이동하는 버튼 생성
+    const prevGroupBtn = document.createElement("span");
+    prevGroupBtn.textContent = "<";
+    prevGroupBtn.classList.add("prev");
+    prevGroupBtn.addEventListener("click", () => {
+      page = firstPagePerGroup - 1;
+      renderGenre(genreId);
+      createGenrePagination(page);
+    });
+    $genrePagination.appendChild(prevGroupBtn);
+  }
+
+  // 페이지 버튼 생성
+  for (let i = firstPagePerGroup; i <= lastPagePerGroup; i++) {
+    const pageButton = document.createElement("button");
+    pageButton.textContent = i;
+    if (i === currentPage) pageButton.classList.add("on");
+    pageButton.addEventListener("click", () => {
+      page = i;
+      renderGenre(genreId);
+      createGenrePagination(page);
+    });
+    $genrePagination.appendChild(pageButton);
+  }
+
+  if (lastPagePerGroup < totalPage) {
+    // 다음 그룹으로 이동하는 버튼 생성
+    const nextGroupBtn = document.createElement("span");
+    nextGroupBtn.textContent = ">";
+    nextGroupBtn.classList.add("next");
+    nextGroupBtn.addEventListener("click", () => {
+      page = lastPagePerGroup + 1;
+      renderGenre(genreId);
+      createGenrePagination(page);
+    });
+    $genrePagination.appendChild(nextGroupBtn);
+  }
 };
 createGenreBtn();
 renderGenre();
 
-const createGenrePagination = () => {};
+// modal
+const createModal = (movieId) => {
+  const $contentSec = document.createElement("div");
+  const $commentSec = document.createElement("div");
+  const backdropImgUrl = movieId.backdrop_path
+    ? `https://image.tmdb.org/t/p/w500${movieId.backdrop_path}`
+    : "./images/no-img.PNG";
 
-// 모달 fetch
-const fetchModalData = async (movieId) => {
-  try {
-    const modalUrl = new URL(
-      `https://api.themoviedb.org/3/movie/${movieId}?append_to_response=credits&language=ko-KR`
-    );
-    modalUrl.searchParams.set("api_key", TM_API_KEY);
+  $contentSec.setAttribute("class", "content-sec");
+  $commentSec.setAttribute("class", "comment-sec");
 
-    const res = await fetch(modalUrl, options);
-    const tmData = await res.json();
+  // Cast 배열이 있는지 확인하고, 없는 경우 빈 배열로
+  const cast =
+    movieId.credits && movieId.credits.cast ? movieId.credits.cast : [];
 
-    return tmData;
-  } catch (e) {
-    console.log(e);
-  }
+  // 최대 4명의 배우만 표시하고, 나머지는 ...로 표시
+  const displayedCast = cast
+    .slice(0, 4)
+    .map((item) => item.name)
+    .join(", ");
+  const hasMoreActors = cast.length > 4 ? "..." : "";
+
+  // 모달을 열 때 저장된 댓글을 업로드
+  let comments =
+    JSON.parse(localStorage.getItem(`comments_${movieId.id}`)) || [];
+
+  $contentSec.innerHTML = `
+    <div class="movie-poster">
+      <img
+        src="${backdropImgUrl}"
+        alt=""
+      />
+    </div>
+    <div class="movie-contents-con">
+      <div class="title-content">
+        <p class="modal-title">${movieId.title}</p>
+        <div class="score">
+          <i class="fa fa-star"></i>
+          <p class="star">${movieId.vote_average.toFixed(1)}</p>
+        </div>
+      </div>
+      <p class="show-date">개봉일자: ${movieId.release_date}</p>
+      <div class="people-content">
+        <p class="genre">장르: ${movieId.genres
+          .map((item) => item.name)
+          .join(", ")}</p>
+        <p class="director">감독: ${movieId.credits.crew
+          .filter((crew) => crew.job === "Director")
+          .map((director) => director.name)
+          .join(", ")}</p>
+        <p class="run-time">상영시간: ${movieId.runtime}분</p>
+        <p class="actors">배우: ${displayedCast}${hasMoreActors}</p>
+      </div>
+      <p class="plot">
+        ${movieId.overview}
+      </p>
+    </div>
+  `;
+
+  const renderComments = () => {
+    $commentSec.innerHTML = `
+      <div class="my-comment-con">
+        <p class="comment-title">나의 한줄평</p>
+        <div id="comments-list">
+          ${
+            comments.length > 0
+              ? comments
+                  .map((comment) => `<p class="my-comment">${comment}</p>`)
+                  .join("<br />")
+              : "<p>작성하신 글이 없습니다. 영화에 대한 한줄평을 남겨보세요</p>"
+          }
+        </div>
+      </div>
+      <div class="comment-con">
+        <input type="text" id="comment" placeholder=" 글을 입력해주세요" />
+        <button class="comment-btn" id="comment-btn">댓글달기</button>
+      </div>
+    `;
+  };
+
+  renderComments();
+
+  $modalWrapper.appendChild($contentSec);
+  $modalWrapper.appendChild($commentSec);
+
+  // 댓글 올리기 이벤트 리스너
+  document.getElementById("comment-btn").addEventListener("click", () => {
+    const newComment = document.getElementById("comment").value.trim();
+    if (newComment) {
+      comments.push(newComment);
+      localStorage.setItem(`comments_${movieId.id}`, JSON.stringify(comments));
+      document.getElementById("comment").value = "";
+      renderComments();
+    }
+  });
+
+  document.getElementById("comment").addEventListener("keyup", (e) => {
+    if (e.key === "Enter") {
+      document.getElementById("comment-btn").click();
+    }
+  });
+
+  return $modalWrapper;
 };
 
 const openModal = async (movieId) => {
   $modalCon.classList.add("on");
   const data = await fetchModalData(movieId);
-  createModal(data, $modalWrapper);
+  createModal(data);
 };
 
+// ---------- 이벤트 리스너 ---------- //
+// header
 // 헤더 메뉴 클릭 시 해당 섹션으로 이동
 $searchMenu.addEventListener("click", () => {
   $section1.scrollIntoView({ behavior: "smooth" });
@@ -425,6 +505,7 @@ $genreMenu.addEventListener("click", () => {
   $section3.scrollIntoView({ behavior: "smooth" });
 });
 
+// section1
 // 검색창에 제목 입력 시 관련 영화 포스터 나오게 하기
 $searchInput.addEventListener("keyup", (e) => {
   if (e.key === "Enter") {
@@ -433,6 +514,11 @@ $searchInput.addEventListener("keyup", (e) => {
 });
 $searchBtn.addEventListener("click", searchMovie);
 
+// section2
+$prev.addEventListener("click", () => moveCard(-1, 3));
+$next.addEventListener("click", () => moveCard(1, 3));
+
+// modal
 $closeBtn.addEventListener("click", () => {
   $modalCon.classList.remove("on");
   $modalWrapper.innerHTML = "";
