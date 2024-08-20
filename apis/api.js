@@ -1,5 +1,5 @@
 // API URL 생성 함수
-const API_KEY = "20bc91ea9f74bee7cbb4d963cc9ce35c";
+import API_KEY from "../config.js";
 const BASE_URL = "https://api.themoviedb.org/3";
 
 const fetchUrl = async (endpoint, params = {}) => {
