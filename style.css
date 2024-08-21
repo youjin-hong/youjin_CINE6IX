@@ -100,7 +100,7 @@ h1 > span {
 .section-con {
   width: 80%;
   max-width: 1400px;
-  margin: auto;
+  margin: 0 auto;
   padding: 2rem 0;
   display: flex;
   flex-direction: column;
@@ -384,13 +384,15 @@ footer p {
 .modal-con {
   opacity: 0;
   transition: 0.3s;
+  margin: auto;
 }
 .modal-con.on {
   opacity: 1;
   position: fixed;
   border: 2px solid #ffba4c;
-  top: 10%;
-  left: 15%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   z-index: 999;
 }
 .modal-wrapper {
@@ -400,7 +402,7 @@ footer p {
   max-width: 1200px;
   height: 30vw;
   min-height: 700px;
-  margin: auto;
+  margin: 0 auto;
   border-radius: 6px;
   justify-content: space-between;
   padding-top: 1rem;
