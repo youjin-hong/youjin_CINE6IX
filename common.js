@@ -4,7 +4,7 @@ import error from "./components/error.js";
 
 // ---------- 변수 설정 ---------- //
 // API_KEY
-// const API_KEY = "";
+const API_KEY = "";
 
 // header
 const $searchMenu = document.getElementById("search-menu");

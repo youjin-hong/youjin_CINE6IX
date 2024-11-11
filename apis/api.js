@@ -9,7 +9,7 @@ const fetchUrl = async (endpoint, params = {}) => {
     headers: {
       accept: "application/json",
       Authorization:
-        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMGJjOTFlYTlmNzRiZWU3Y2JiNGQ5NjNjYzljZTM1YyIsIm5iZiI6MTcyMzQyNDQ0Mi41MDgxNTYsInN1YiI6IjY2Yjk1ZTBjMmZiNDAzNjg2MTI1NmI5YiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.7EKPhYlBBQMXzo_fJog13U-t-WXUEdR33FQxuJO5XqU",
+        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMGJjOTFlYTlmNzRiZWU3Y2JiNGQ5NjNjYzljZTM1YyIsIm5iZiI6MTczMTI5NDk0My40OTE2MjM0LCJzdWIiOiI2NmI5NWUwYzJmYjQwMzY4NjEyNTZiOWIiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.gQgofzeCWHj0SUYov4IDLuO_9e-YaUONiiIqk6sCsRg",
     },
   };
   const url = new URL(`${BASE_URL}${endpoint}`);
