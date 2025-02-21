@@ -1,6 +1,7 @@
 ﻿# 🎞️📽️영화 추천 사이트 CINE6IX
 
 배포 URL: https://youjin-hong.github.io/youjin_CINE6IX/
+<br />
 시연 영상: https://youtu.be/RTzwB4wfCas?si=RC-Xmv6rYurUdost
 
 CINE6IX는 보고 싶은 영화를 손쉽게 검색하고, 최신 영화나 특정 장르의 영화를 인기순으로 추천받을 수 있는 사이트입니다. 영화 상세 정보를 확인하고, 나만의 영화평을 기록할 수 있어 영화 감상 후 간단한 의견을 남기기에 편리합니다.
